@@ -27,16 +27,16 @@ public class GrokNativeScriptFactory implements NativeScriptFactory {
                 XContentMapValues.nodeStringValue(params.get("groupkeys"), null);
 
 
-        if (fieldName == null || fieldName.equals("")) {
+        if (fieldName == null || "".equals(fieldName)) {
             throw new ScriptException("Missing field parameter");
         }
-        if (pattern == null || pattern.equals("")) {
+        if (pattern == null || "".equals(pattern)) {
             throw new ScriptException("Missing field parameter");
         }
 
         List<String> groupkeyList = new ArrayList<>();
 
-        if (groupkeys != null && !groupkeys.equals("")) {
+        if (groupkeys != null && !"".equals(groupkeys)) {
             groupkeyList = Arrays.asList(groupkeys.split(","));
         }
 
