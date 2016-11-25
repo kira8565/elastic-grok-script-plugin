@@ -32,7 +32,6 @@ public class GrokNativeScript extends AbstractSearchScript {
     /**
      * If Has groupkeys The Function will return groupkeys values,
      * it is useful for aggregations ^_^
-     *
      */
     public Object run() {
         String docValue = String.valueOf(source().get(this.fieldname));
@@ -61,8 +60,7 @@ public class GrokNativeScript extends AbstractSearchScript {
                     }
                 }
             } catch (GrokException e) {
-                logger.error("Compile Grok Pattern Fail");
-                e.printStackTrace();
+                logger.error("Compile Grok Pattern Fail", e);
             }
         }
         return null;

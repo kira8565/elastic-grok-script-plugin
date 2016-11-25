@@ -38,14 +38,12 @@ public class FileSystemGrokPatternLoader implements IGrokPatternLoader {
                                     try {
                                         GlobalGrokPattern.globalGrokPattern.addPattern(pattern.trim(), regx.trim());
                                     } catch (GrokException e1) {
-                                        e1.printStackTrace();
-                                        logger.error(String.format("Load Pattern %s Fail", pattern));
+                                        logger.error(String.format("Load Pattern %s Fail", pattern), e1);
                                     }
                                 }
                             });
                         } catch (IOException e) {
-                            logger.error("Loading Pattern Fail:" + patternFile.toString());
-                            e.printStackTrace();
+                            logger.error("Loading Pattern Fail:" + patternFile.toString(), e);
                         }
                     }
                 }
