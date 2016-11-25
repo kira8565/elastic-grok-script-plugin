@@ -39,7 +39,7 @@ public class GrokNativeScriptFactory implements NativeScriptFactory {
         if (groupkeys != null && !groupkeys.equals("")) {
             groupkeyList = Arrays.asList(groupkeys.split(","));
         }
-        Arrays.asList(groupkeys.split(","));
+
         return new GrokNativeScript(pattern, fieldName, groupkeyList);
     }
 
