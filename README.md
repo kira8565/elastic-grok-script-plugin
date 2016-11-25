@@ -11,6 +11,15 @@ Elastic-Grok-Script-Plugin is a provider of Grok ElasticSearch plug-in
 * restart your elasticsearch
 * Have Fun (○’ω’○)
 
+# Params
+
+Name|Desc
+----|----
+fieldName|which field in source do you want to grok
+pattern| your grok pattern
+groupkeys|you can use this param to get the field after grok or the file in source
+,if you want to get multi fields ,you can use like this `a,b,c`
+
 # Sample
 
 * Use Grok to Extract Fields Extract Fields
