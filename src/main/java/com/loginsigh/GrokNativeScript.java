@@ -1,14 +1,13 @@
 package com.loginsigh;
 
+import oi.thekraken.grok.api.Grok;
 import oi.thekraken.grok.api.Match;
 import oi.thekraken.grok.api.exception.GrokException;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
-import org.elasticsearch.index.fielddata.ScriptDocValues;
 import org.elasticsearch.script.AbstractSearchScript;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,11 +33,30 @@ public class GrokNativeScript extends AbstractSearchScript {
      * it is useful for aggregations ^_^
      */
     public Object run() {
+
         String docValue = String.valueOf(source().get(this.fieldname));
-        if (docValue != null && !docValue.isEmpty()) {
+        if (docValue == null && docValue.isEmpty()) {
+            return null;
+        } else {
             try {
-                GlobalGrokPattern.globalGrokPattern.compile(pattern);
-                Match match = GlobalGrokPattern.globalGrokPattern.match(docValue);
+
+                /**
+                 *Because ElasticSearch run plugin as paralle,and the grok lib has error in paralle.
+                 * So i new a grok in here an it will be fine .....
+                 */
+
+                Grok grok = new Grok();
+
+                GlobalGrokPattern.globalGrokPatternList.forEach(e -> {
+                    try {
+                        grok.addPattern(e.getGrokPattern().trim(), e.getGrokRegx().trim());
+                    } catch (GrokException e1) {
+                        logger.error(String.format("Load Pattern %s Fail", pattern), e1);
+                    }
+                });
+
+                grok.compile(pattern);
+                Match match = grok.match(docValue);
                 match.captures();
                 Map<String, Object> map = match.toMap();
                 if (groupkeyList.isEmpty()) {
@@ -61,8 +79,8 @@ public class GrokNativeScript extends AbstractSearchScript {
                 }
             } catch (GrokException e) {
                 logger.error("Compile Grok Pattern Fail", e);
+                return null;
             }
         }
-        return null;
     }
 }
