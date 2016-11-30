@@ -106,6 +106,28 @@ isHashMap|(optional) you can use this param to set how to return the result,stri
             "size": 1
         }
 
+# Metrics
+
+Use ApacheAccessLog and use COMMONAPACHELOG Pattern
+
+number of lines| cost
+---------|-------
+100 |0.2s
+1000 |0.5s
+10000 |19s
+100000 |3m17s
+
+Use ApacheAccessLog and use WORD Pattern
+
+number of lines| cost
+---------|-------
+100 |0.03s
+1000|0.26s
+10000|2.9s
+100000|34s
+
+So, I Think The Performance bottlenecks is the grok lib ,and the grok performance is depency with your Gork Pattern
+
 # Howto
 
 * if you want to load the Grok Pattern from other place,you can implement the `IGrokPatternLoader`
