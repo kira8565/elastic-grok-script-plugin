@@ -50,10 +50,7 @@ public class GrokNativeScriptFactory implements NativeScriptFactory {
             isHashMapBoolean = true;
         }
 
-        IGrokPatternLoader iGrokPatternLoader = new FileSystemGrokPatternLoader();
-        List<GrokEntity> grokEntityList = iGrokPatternLoader.loadGrokPattern();
-
-        return new GrokNativeScript(pattern, fieldName, groupkeyList, isHashMapBoolean, grokEntityList);
+        return new GrokNativeScript(pattern, fieldName, groupkeyList, isHashMapBoolean);
     }
 
     public boolean needsScores() {

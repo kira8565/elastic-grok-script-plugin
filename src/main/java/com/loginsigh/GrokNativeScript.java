@@ -21,15 +21,13 @@ public class GrokNativeScript extends AbstractSearchScript {
     private final String fieldname;
     private final List<String> groupkeyList;
     private final Boolean isHashMap;
-    private final List<GrokEntity> grokEntityList;
 
-    public GrokNativeScript(String pattern, String fieldname, List<String> groupkeyList, Boolean isHashMap,
-                            List<GrokEntity> grokEntityList) {
+    public GrokNativeScript(String pattern, String fieldname, List<String> groupkeyList, Boolean isHashMap
+    ) {
         this.pattern = pattern;
         this.fieldname = fieldname;
         this.groupkeyList = groupkeyList;
         this.isHashMap = isHashMap;
-        this.grokEntityList = grokEntityList;
     }
 
     final ESLogger logger = Loggers.getLogger(getClass());
@@ -45,21 +43,13 @@ public class GrokNativeScript extends AbstractSearchScript {
             return null;
         } else {
             try {
+                IGrokPatternLoader iGrokPatternLoader = new FileSystemGrokPatternLoader();
+                Grok grok = iGrokPatternLoader.loadGrokPattern();
 
                 /**
                  *Because ElasticSearch run plugin as paralle,and the grok lib has error in paralle.
                  * So i new a grok in here an it will be fine .....
                  */
-
-                Grok grok = new Grok();
-
-                grokEntityList.forEach(e -> {
-                    try {
-                        grok.addPattern(e.getGrokPattern().trim(), e.getGrokRegx().trim());
-                    } catch (GrokException e1) {
-                        logger.error(String.format("Load Pattern %s Fail", pattern), e1);
-                    }
-                });
 
                 grok.compile(pattern);
                 Match match = grok.match(docValue);

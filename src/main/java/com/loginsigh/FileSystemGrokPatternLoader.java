@@ -1,5 +1,6 @@
 package com.loginsigh;
 
+import oi.thekraken.grok.api.Grok;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 
@@ -16,15 +17,15 @@ public class FileSystemGrokPatternLoader implements IGrokPatternLoader {
     final ESLogger logger = Loggers.getLogger(getClass());
 
     @Override
-    public List<GrokEntity> loadGrokPattern() {
+    public Grok loadGrokPattern() {
         File file = new File("./plugins/grokplugin/pattern/");
         try {
             GrokFileVisitor fileVisitor = new GrokFileVisitor();
             Files.walkFileTree(file.toPath(), fileVisitor);
-            return fileVisitor.getGrokEntityList();
+            return fileVisitor.getGrok();
         } catch (IOException e) {
             logger.error("walk grok files fail", e);
-            return new ArrayList<>();
+            return Grok.EMPTY;
         }
 
     }

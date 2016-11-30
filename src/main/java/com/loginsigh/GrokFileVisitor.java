@@ -1,5 +1,7 @@
 package com.loginsigh;
 
+import oi.thekraken.grok.api.Grok;
+import oi.thekraken.grok.api.exception.GrokException;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 
@@ -18,24 +20,20 @@ import java.util.List;
 public class GrokFileVisitor extends SimpleFileVisitor<Path> {
     final ESLogger logger = Loggers.getLogger(getClass());
 
-    private List<GrokEntity> grokEntityList = new ArrayList<>();
+    private Grok grok = new Grok();
 
-    public List<GrokEntity> getGrokEntityList() {
-        return this.grokEntityList;
+    public Grok getGrok() {
+        return this.grok;
     }
 
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
         if (!attrs.isDirectory() && !path.getFileName().toString().startsWith(".")) {
-            List<String> lines = Files.readAllLines(path);
-            lines.stream()
-                    .filter(e -> !e.isEmpty() && !e.startsWith("#"))
-                    .map(e -> {
-                        String pattern = e.split(" ")[0];
-                        String regx = e.substring(pattern.length());
-                        return new GrokEntity(pattern, regx);
-                    })
-                    .forEach(e -> grokEntityList.add(e));
+            try {
+                grok.addPatternFromFile(String.valueOf(path.toAbsolutePath()));
+            } catch (GrokException e) {
+                logger.error("Create Grok Fail", e);
+            }
         }
         return FileVisitResult.CONTINUE;
     }
