@@ -1,5 +1,6 @@
 package com.loginsigh;
 
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.inject.internal.Nullable;
 import org.elasticsearch.common.xcontent.support.XContentMapValues;
 import org.elasticsearch.script.ExecutableScript;
@@ -26,6 +27,9 @@ public class GrokNativeScriptFactory implements NativeScriptFactory {
         String groupkeys = params == null ? null :
                 XContentMapValues.nodeStringValue(params.get("groupkeys"), null);
 
+        String isHashMap = params == null ? null :
+                XContentMapValues.nodeStringValue(params.get("isHashMap"), "");
+
 
         if (fieldName == null || "".equals(fieldName)) {
             throw new ScriptException("Missing field parameter");
@@ -35,12 +39,17 @@ public class GrokNativeScriptFactory implements NativeScriptFactory {
         }
 
         List<String> groupkeyList = new ArrayList<>();
-
         if (groupkeys != null && !"".equals(groupkeys)) {
             groupkeyList = Arrays.asList(groupkeys.split(","));
         }
 
-        return new GrokNativeScript(pattern, fieldName, groupkeyList);
+        Boolean isHashMapBoolean;
+        if (StringUtils.isBlank(isHashMap) || "false".equals(isHashMap.toLowerCase())) {
+            isHashMapBoolean = false;
+        } else {
+            isHashMapBoolean = true;
+        }
+        return new GrokNativeScript(pattern, fieldName, groupkeyList, isHashMapBoolean);
     }
 
     public boolean needsScores() {

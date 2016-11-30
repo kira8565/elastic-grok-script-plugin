@@ -8,6 +8,7 @@ import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.script.AbstractSearchScript;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +20,13 @@ public class GrokNativeScript extends AbstractSearchScript {
     private final String pattern;
     private final String fieldname;
     private final List<String> groupkeyList;
+    private final Boolean isHashMap;
 
-    public GrokNativeScript(String pattern, String fieldname, List<String> groupkeyList) {
+    public GrokNativeScript(String pattern, String fieldname, List<String> groupkeyList, Boolean isHashMap) {
         this.pattern = pattern;
         this.fieldname = fieldname;
         this.groupkeyList = groupkeyList;
+        this.isHashMap = isHashMap;
     }
 
     final ESLogger logger = Loggers.getLogger(getClass());
@@ -63,18 +66,27 @@ public class GrokNativeScript extends AbstractSearchScript {
                     return map;
                 } else {
                     StringBuilder sb = new StringBuilder();
-                    groupkeyList.forEach(e -> {
-                        if (map.containsKey(e)) {
-                            sb.append(String.valueOf(map.get(e)));
-                        } else {
-                            sb.append(String.valueOf(source().source().get(e)));
-                        }
-                    });
-                    String finalResult = sb.toString();
-                    if (StringUtils.isNumeric(finalResult)) {
-                        return Double.valueOf(finalResult);
+                    if (isHashMap) {
+                        HashMap<String, Object> targetHashMap = new HashMap<>();
+
+                        groupkeyList.forEach(e -> {
+                            targetHashMap.put(e, map.get(e));
+                        });
+                        return targetHashMap;
                     } else {
-                        return finalResult;
+                        groupkeyList.forEach(e -> {
+                            if (map.containsKey(e)) {
+                                sb.append(String.valueOf(map.get(e)));
+                            } else {
+                                sb.append(String.valueOf(source().source().get(e)));
+                            }
+                        });
+                        String finalResult = sb.toString();
+                        if (StringUtils.isNumeric(finalResult)) {
+                            return Double.valueOf(finalResult);
+                        } else {
+                            return finalResult;
+                        }
                     }
                 }
             } catch (GrokException e) {
