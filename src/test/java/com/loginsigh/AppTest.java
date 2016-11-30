@@ -47,8 +47,10 @@ public class AppTest
         String content = "2016-11-25T02:44:26.142Z GET /posts [200] 50ms";
         Files.walkFileTree(new File("/Users/kira/loginsight/elastic-grok-script-plugin/src/test/resources/pattern").toPath(),
                 new GrokFileVisitor());
+        IGrokPatternLoader iGrokPatternLoader = new FileSystemGrokPatternLoader();
+        List<GrokEntity> grokList = iGrokPatternLoader.loadGrokPattern();
         Grok grok = new Grok();
-        GlobalGrokPattern.globalGrokPatternList.forEach(e -> {
+        grokList.forEach(e -> {
             try {
                 grok.addPattern(e.getGrokPattern(), e.getGrokRegx());
             } catch (GrokException e1) {
@@ -66,10 +68,12 @@ public class AppTest
         String content = "2016-11-25T02:44:26.142Z GET /posts [200] 50ms";
         ArrayList<Object> list = new ArrayList<Object>(
                 Collections.nCopies(1000, new Object()));
+        IGrokPatternLoader iGrokPatternLoader = new FileSystemGrokPatternLoader();
+        List<GrokEntity> grokList = iGrokPatternLoader.loadGrokPattern();
         list.parallelStream().forEach(e -> {
             try {
                 Grok grok = new Grok();
-                GlobalGrokPattern.globalGrokPatternList.forEach(o -> {
+                grokList.forEach(o -> {
                     try {
                         grok.addPattern(o.getGrokPattern(), o.getGrokRegx());
                     } catch (GrokException e1) {

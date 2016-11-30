@@ -32,10 +32,6 @@ public class GrokPlugin extends Plugin {
 
     public void onModule(ScriptModule scriptModule) throws IOException {
         logger.info(settings.names().toString());
-        logger.info("############## Init Grok Patterns #####################");
-        IGrokPatternLoader iGrokPatternLoader = new FileSystemGrokPatternLoader();
-        iGrokPatternLoader.loadGrokPattern();
-        logger.info("############## Init Grok Patterns Success #####################");
         scriptModule.registerScript("grokscript", GrokNativeScriptFactory.class);
     }
 

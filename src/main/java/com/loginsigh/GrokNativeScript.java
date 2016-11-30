@@ -21,12 +21,15 @@ public class GrokNativeScript extends AbstractSearchScript {
     private final String fieldname;
     private final List<String> groupkeyList;
     private final Boolean isHashMap;
+    private final List<GrokEntity> grokEntityList;
 
-    public GrokNativeScript(String pattern, String fieldname, List<String> groupkeyList, Boolean isHashMap) {
+    public GrokNativeScript(String pattern, String fieldname, List<String> groupkeyList, Boolean isHashMap,
+                            List<GrokEntity> grokEntityList) {
         this.pattern = pattern;
         this.fieldname = fieldname;
         this.groupkeyList = groupkeyList;
         this.isHashMap = isHashMap;
+        this.grokEntityList = grokEntityList;
     }
 
     final ESLogger logger = Loggers.getLogger(getClass());
@@ -38,7 +41,7 @@ public class GrokNativeScript extends AbstractSearchScript {
     public Object run() {
 
         String docValue = String.valueOf(source().get(this.fieldname));
-        if (docValue == null && docValue.isEmpty()) {
+        if (StringUtils.isBlank(docValue)) {
             return null;
         } else {
             try {
@@ -50,7 +53,7 @@ public class GrokNativeScript extends AbstractSearchScript {
 
                 Grok grok = new Grok();
 
-                GlobalGrokPattern.globalGrokPatternList.forEach(e -> {
+                grokEntityList.forEach(e -> {
                     try {
                         grok.addPattern(e.getGrokPattern().trim(), e.getGrokRegx().trim());
                     } catch (GrokException e1) {

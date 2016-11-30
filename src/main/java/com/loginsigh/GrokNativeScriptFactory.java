@@ -18,28 +18,28 @@ import java.util.Map;
 public class GrokNativeScriptFactory implements NativeScriptFactory {
     public ExecutableScript newScript(@Nullable Map<String, Object> params) {
 
-        String pattern = params == null ? null :
-                XContentMapValues.nodeStringValue(params.get("pattern"), null);
+        String pattern = params == null ? "" :
+                XContentMapValues.nodeStringValue(params.get("pattern"), "");
 
-        String fieldName = params == null ? null :
-                XContentMapValues.nodeStringValue(params.get("fieldName"), null);
+        String fieldName = params == null ? "" :
+                XContentMapValues.nodeStringValue(params.get("fieldName"), "");
 
-        String groupkeys = params == null ? null :
-                XContentMapValues.nodeStringValue(params.get("groupkeys"), null);
+        String groupkeys = params == null ? "" :
+                XContentMapValues.nodeStringValue(params.get("groupkeys"), "");
 
-        String isHashMap = params == null ? null :
+        String isHashMap = params == null ? "" :
                 XContentMapValues.nodeStringValue(params.get("isHashMap"), "");
 
 
-        if (fieldName == null || "".equals(fieldName)) {
+        if (StringUtils.isBlank(fieldName)) {
             throw new ScriptException("Missing field parameter");
         }
-        if (pattern == null || "".equals(pattern)) {
+        if (StringUtils.isBlank(pattern)) {
             throw new ScriptException("Missing field parameter");
         }
 
         List<String> groupkeyList = new ArrayList<>();
-        if (groupkeys != null && !"".equals(groupkeys)) {
+        if (StringUtils.isNotBlank(groupkeys)) {
             groupkeyList = Arrays.asList(groupkeys.split(","));
         }
 
@@ -49,7 +49,11 @@ public class GrokNativeScriptFactory implements NativeScriptFactory {
         } else {
             isHashMapBoolean = true;
         }
-        return new GrokNativeScript(pattern, fieldName, groupkeyList, isHashMapBoolean);
+
+        IGrokPatternLoader iGrokPatternLoader = new FileSystemGrokPatternLoader();
+        List<GrokEntity> grokEntityList = iGrokPatternLoader.loadGrokPattern();
+
+        return new GrokNativeScript(pattern, fieldName, groupkeyList, isHashMapBoolean, grokEntityList);
     }
 
     public boolean needsScores() {

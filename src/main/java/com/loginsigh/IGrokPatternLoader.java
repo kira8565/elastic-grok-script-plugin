@@ -8,5 +8,5 @@ import java.util.List;
  * Created by kira on 16/11/25.
  */
 public interface IGrokPatternLoader {
-    void loadGrokPattern();
+    List<GrokEntity> loadGrokPattern();
 }

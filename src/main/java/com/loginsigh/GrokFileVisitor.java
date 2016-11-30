@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +17,12 @@ import java.util.List;
  */
 public class GrokFileVisitor extends SimpleFileVisitor<Path> {
     final ESLogger logger = Loggers.getLogger(getClass());
+
+    private List<GrokEntity> grokEntityList = new ArrayList<>();
+
+    public List<GrokEntity> getGrokEntityList() {
+        return this.grokEntityList;
+    }
 
     @Override
     public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
@@ -26,13 +33,11 @@ public class GrokFileVisitor extends SimpleFileVisitor<Path> {
                     .map(e -> {
                         String pattern = e.split(" ")[0];
                         String regx = e.substring(pattern.length());
-                        GrokEntity grokEntity = new GrokEntity(pattern, regx);
-                        return grokEntity;
+                        return new GrokEntity(pattern, regx);
                     })
-                    .forEach(e -> {
-                        GlobalGrokPattern.globalGrokPatternList.add(e);
-                    });
+                    .forEach(e -> grokEntityList.add(e));
         }
         return FileVisitResult.CONTINUE;
     }
+
 }

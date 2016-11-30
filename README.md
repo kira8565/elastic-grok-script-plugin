@@ -19,6 +19,7 @@ fieldName|which field in source do you want to grok
 pattern| your grok pattern
 groupkeys|you can use this param to get the field after grok or the file in source
 ,if you want to get multi fields ,you can use like this `a,b,c`
+isHashMap|(optional) you can use this param to set how to return the result,string or hashmap,`true` or `false`
 
 # Sample
 
